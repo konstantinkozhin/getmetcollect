@@ -250,7 +250,7 @@ def parsing():
             
         i = int(timer.index(i))
 
-        url = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
+        url = f'https://www.metmuseum.org/art/collection/search/{timer[i]}'
         req = requests.get(url)
 
         url2 = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
@@ -259,7 +259,7 @@ def parsing():
         if str(req) == '<Response [200]>' and str(req) == '<Response [200]>':
  
 
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(req.text, 'html.parser')
 
 
             quotes = soup.find_all('span', class_='artwork__title--text')
