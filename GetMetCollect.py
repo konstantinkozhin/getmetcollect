@@ -25,6 +25,8 @@ import math
 from datetime import datetime
 from tqdm import tqdm
 
+import base64
+
 import random
 import re 
 
@@ -37,12 +39,23 @@ import matplotlib.pyplot as plt
 import time
 from bs4 import BeautifulSoup
 
+
+
 root = tk.Tk()
 root.title('GetMetCollect')
 root.geometry("550x350")
 root.resizable(width=False, height=False)
-root.iconbitmap('icon.ico')
 
+
+icon = b'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'
+
+icondata= base64.b64decode(icon)
+tempFile= "icon.ico"
+iconfile= open(tempFile,"wb")
+iconfile.write(icondata)
+iconfile.close()
+root.wm_iconbitmap(tempFile)
+os.remove(tempFile)
 
 def create_a_file():
     
@@ -132,48 +145,49 @@ def api():
         
         i = int(timer.index(i))
 
-        a = 0
-        while(a==0):
 
-            time.sleep(0.001) 
+        time.sleep(0.001) 
 
-            url = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
-            req = requests.get(url)
+        url = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
+        req = requests.get(url)
 
-            if str(req) == '<Response [200]>':
+        url2 = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
+        req2 = requests.get(url2)
 
-
-                obj = req.json()
+        if str(req) == '<Response [200]>' and str(req) == '<Response [200]>':
 
 
-                objectID.append(obj['objectID'])
+            obj = req.json()
 
-                isPublicDomain.append(str(obj['isPublicDomain']))
 
-                title.append(obj['title'])
+            objectID.append(obj['objectID'])
 
-                artistDisplayName.append(obj['artistDisplayName'])
-                artistNationality.append(obj['artistNationality'])
-                additionalImages.append(obj['additionalImages'])
+            isPublicDomain.append(str(obj['isPublicDomain']))
 
-                objectDate.append(obj['objectDate'])
-                objectBeginDate.append(obj['objectBeginDate'])
-                objectEndDate.append(obj['objectEndDate'])
+            title.append(obj['title'])
 
-                medium.append(obj['medium'])
+            artistDisplayName.append(obj['artistDisplayName'])
+            artistNationality.append(obj['artistNationality'])
+            additionalImages.append(obj['additionalImages'])
 
-                dimensions.append(obj['dimensions'])
+            objectDate.append(obj['objectDate'])
+            objectBeginDate.append(obj['objectBeginDate'])
+            objectEndDate.append(obj['objectEndDate'])
 
-                classification.append(obj['classification'])
+            medium.append(obj['medium'])
 
-                creditLine.append(obj['creditLine'])
+            dimensions.append(obj['dimensions'])
 
-                repository.append(obj['repository'])
+            classification.append(obj['classification'])
 
-                a = 1
+            creditLine.append(obj['creditLine'])
 
-            else: 
-                a = 0
+            repository.append(obj['repository'])
+
+
+        else: continue
+                    
+                
 
     second = time.strftime("%X", time.localtime())
     format = '%H:%M:%S'
@@ -232,54 +246,53 @@ def parsing():
                 "Accept-Language": "en"
             }
             
+        time.sleep(0.001) 
+            
         i = int(timer.index(i))
 
-        url = f'https://www.metmuseum.org/art/collection/search/{ids_list[i]}'
-        response = requests.get(url)
+        url = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
+        req = requests.get(url)
 
-        a = 0
-        while(a==0):
+        url2 = f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{timer[i]}'
+        req2 = requests.get(url2)
 
-            time.sleep(0.1) 
+        if str(req) == '<Response [200]>' and str(req) == '<Response [200]>':
+ 
 
-            if str(response) == '<Response [200]>':
-
-                soup = BeautifulSoup(response.text, 'html.parser')
-
-
-                quotes = soup.find_all('span', class_='artwork__title--text')
-                for quote in quotes:
-                    title.append(quote.text)
+            soup = BeautifulSoup(response.text, 'html.parser')
 
 
-                quotes = soup.find_all('p', class_='artwork__creation-origin')
-                for quote in quotes:
-                    author.append(quote.text.replace("\n", ""))
+            quotes = soup.find_all('span', class_='artwork__title--text')
+            for quote in quotes:
+                title.append(quote.text)
 
 
-                quotes = soup.find_all('span', class_='location__onview')
-                for quote in quotes:
-                    location.append(re.sub('\s+', ' ', str(quote.text)))
-
-                url_map = str(quotes).split('a href="', 1)[-1]
-                url_map = url_map.split('=="', 1)[0]
-                lacation_url.append(url_map)
-                #print(url_map)
+            quotes = soup.find_all('p', class_='artwork__creation-origin')
+            for quote in quotes:
+                author.append(quote.text.replace("\n", ""))
 
 
-                quotes = soup.find_all('div', class_='artwork__intro__desc')
-                for quote in quotes:
-                    description.append(re.sub('\s+', ' ', str(quote.text)))
+            quotes = soup.find_all('span', class_='location__onview')
+            for quote in quotes:
+                location.append(re.sub('\s+', ' ', str(quote.text)))
+
+            url_map = str(quotes).split('a href="', 1)[-1]
+            url_map = url_map.split('=="', 1)[0]
+            lacation_url.append(url_map)
+            #print(url_map)
 
 
-                a = 1
+            quotes = soup.find_all('div', class_='artwork__intro__desc')
+            for quote in quotes:
+                description.append(re.sub('\s+', ' ', str(quote.text)))
+
+
+            a = 1
 
 
 
-            else:
-                print('Attempt to connect to the server')
-                time.sleep(10) 
-                a = 0
+        else: continue
+
 
     second = time.strftime("%X", time.localtime())
     format = '%H:%M:%S'
@@ -338,7 +351,10 @@ def file_in():
     print(f'Selected file: {fileName}')
 
 
-icon_i = PhotoImage(file="file.png")
+img = b'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAASpJREFUWEftmP0RgjAMxfM2cRNlEnUSYRJlEtlEN4mXO/A4sB9phZaj/bd97Y9Hk+YCynwgcz7aPiAzX4joGOF0A+Adqrc6yMw3IqpDN+91AleFQhoBmflARK9IuEEeDGkDlF97708QF1slrLgve0RBegMCaDSAhuuhdnJtQPlGFWQKQBVkKkBvyJSAXpCpAZ2QOQAK5BXA41eWWAzQlZImaagAugybzRcH1ZZNBPt2kJmfRHRSutgBqAbNog5uAVDqRCloNUMc/JZsizqooTKtLYCxLu7bwS1EcfZ5sKSZIQhLwbpaog5ofbhS5bg1ElTyy1sr0ap9c11gs3kAxqvmar9JtI4bQOrDPQS1re/j7LAys9R9Z4+DQpa0ADqb0AkYcuo/NQUw1s0PN8RWOM6qcpQAAAAASUVORK5CYII='
+
+
+icon_i = PhotoImage(data = img)
 photoimage_i = icon_i.subsample(2, 2)
 Button3 = Button(labelframe2,image=photoimage_i, command=file_in,bg='#e4002b', height=25, width=25, font=("Century Gothic", 10, "bold"), justify=CENTER)
 Button3.grid(row=0, column=1, ipadx=0, ipady=0, padx=0, pady=10) 
@@ -353,6 +369,13 @@ Button3.grid(row=0, column=1, ipadx=0, ipady=0, padx=0, pady=10)
 Button4 = Button(labelframe2, text='Parsing', command=parsing, bg='#e4002b',fg='white', height=1, width=20, font=("Century Gothic", 10, "bold"))
 Button4.grid(row=0, column=2, ipadx=0, ipady=0, padx=15, pady=10)
 
+
+def on_enter(e): title_version3['fg'] = 'gray'
+def on_leave(e): title_version3['fg'] = '#f0f0f0'
+title_version3 = Label(root, text='powered by Konstantin Kozhin', bg='#f0f0f0',fg='#f0f0f0', font=("Century Gothic", 9),justify=CENTER)
+title_version3.place(in_=root, anchor="c", relx=.50, rely=.92)
+title_version3.bind("<Enter>", on_enter)
+title_version3.bind("<Leave>", on_leave)
 
 
 root.mainloop()
