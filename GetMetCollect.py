@@ -354,12 +354,5 @@ Button4 = Button(labelframe2, text='Parsing', command=parsing, bg='#e4002b',fg='
 Button4.grid(row=0, column=2, ipadx=0, ipady=0, padx=15, pady=10)
 
 
-def on_enter(e): title_version3['fg'] = 'gray'
-def on_leave(e): title_version3['fg'] = '#f0f0f0'
-title_version3 = Label(root, text='powered by Konstantin Kozhin', bg='#f0f0f0',fg='#f0f0f0', font=("Century Gothic", 9),justify=CENTER)
-title_version3.place(in_=root, anchor="c", relx=.50, rely=.92)
-title_version3.bind("<Enter>", on_enter)
-title_version3.bind("<Leave>", on_leave)
-
 
 root.mainloop()
