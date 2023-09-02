@@ -65,9 +65,13 @@ def create_a_file():
         req = requests.get(url)
         ids = req.json()
         ids_list = ids['objectIDs']
-        with open("file.txt", 'w') as output:
-            for row in ids_list:
-                output.write(str(row) + '\n')
+        
+        if ids_list != None:
+            with open("file.txt", 'w') as output:
+                for row in ids_list:
+                    output.write(str(row) + '\n')
+        else:
+            print('No objects found on request')
 
                 
 def api():
