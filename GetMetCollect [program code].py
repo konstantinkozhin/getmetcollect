@@ -209,7 +209,7 @@ def parsing():
     del timer[int(kol):]
 
         
-    ids_list = timer
+    ids_list = []
     title = []
     author = []
     location = []
@@ -260,6 +260,8 @@ def parsing():
  
 
             soup = BeautifulSoup(req.text, 'html.parser')
+    
+            ids_list.append(timer[i])
 
 
             quotes = soup.find_all('span', class_='artwork__title--text')
